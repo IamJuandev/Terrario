@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import HomeView from './components/HomeView';
 import BusinessCardView from './components/BusinessCardView';
 import RestaurantView from './components/RestaurantView';
 import ListingView from './components/ListingView';
-import { BUSINESSES } from './data/mockData';
+import AdminView from './components/AdminView';
+import { getBusinesses } from './services/api';
 
-export default function App() {
+function PublicApp({ businesses, fetchData }) {
   const [currentView, setCurrentView] = useState('home'); 
   const [selectedBusiness, setSelectedBusiness] = useState(null);
   const [listingConfig, setListingConfig] = useState({ title: '', items: [] });
-  
-  useEffect(() => {
-    // Aunque Tailwind maneja fuentes, mantenemos esto por si acaso o se puede mover a index.html/css
-    const link = document.createElement('link');
-    link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
-  }, []);
 
   const handleBusinessClick = (business) => {
     setSelectedBusiness(business);
@@ -29,15 +23,15 @@ export default function App() {
 
   const handleSeeMore = (type) => {
     if (type === 'nearby') {
-      setListingConfig({ title: 'Cerca de ti', items: BUSINESSES });
+      setListingConfig({ title: 'Cerca de ti', items: businesses });
     } else if (type === 'popular') {
-      setListingConfig({ title: 'Los más populares', items: BUSINESSES }); // Podríamos filtrar/ordenar aquí
+      setListingConfig({ title: 'Los más populares', items: businesses });
     }
     setCurrentView('listing');
   };
 
   const handleCategoryClick = (categoryName) => {
-    const filteredItems = BUSINESSES.filter(biz => biz.category === categoryName);
+    const filteredItems = businesses.filter(biz => biz.category === categoryName);
     setListingConfig({ title: categoryName, items: filteredItems });
     setCurrentView('listing');
   };
@@ -53,17 +47,65 @@ export default function App() {
     }
   };
 
-  const openGoogleMaps = (businessName) => {
-    const query = encodeURIComponent(businessName);
-    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+  const openGoogleMaps = (business) => {
+    if (business && business.latitude && business.longitude) {
+       window.open(`https://www.google.com/maps/search/?api=1&query=${business.latitude},${business.longitude}`, '_blank');
+    } else {
+       const query = encodeURIComponent(business.name || business);
+       window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+    }
   };
 
   return (
-    <div className="font-poppins bg-gray-50 min-h-screen max-w-7xl mx-auto shadow-2xl border-x border-gray-200 overflow-hidden relative text-gray-800">
-      {currentView === 'home' && <HomeView handleBusinessClick={handleBusinessClick} onSeeMore={handleSeeMore} onCategoryClick={handleCategoryClick} />}
+    <>
+      {currentView === 'home' && (
+        <HomeView 
+          businesses={businesses} 
+          handleBusinessClick={handleBusinessClick} 
+          onSeeMore={handleSeeMore} 
+          onCategoryClick={handleCategoryClick} 
+        />
+      )}
       {currentView === 'card' && <BusinessCardView selectedBusiness={selectedBusiness} goBack={goBack} openGoogleMaps={openGoogleMaps} />}
       {currentView === 'restaurant' && <RestaurantView selectedBusiness={selectedBusiness} goBack={goBack} />}
       {currentView === 'listing' && <ListingView title={listingConfig.title} businesses={listingConfig.items} goBack={goBack} handleBusinessClick={handleBusinessClick} />}
+    </>
+  );
+}
+
+export default function App() {
+  const [businesses, setBusinesses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  const fetchData = async () => {
+    try {
+      const result = await getBusinesses();
+      setBusinesses(result.data);
+    } catch (error) {
+      console.error("Error fetching businesses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }, []);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50">Cargando...</div>;
+  }
+
+  return (
+    <div className="font-poppins bg-gray-50 min-h-screen max-w-7xl mx-auto shadow-2xl border-x border-gray-200 overflow-hidden relative text-gray-800">
+      <Routes>
+        <Route path="/" element={<PublicApp businesses={businesses} fetchData={fetchData} />} />
+        <Route path="/manager" element={<AdminView businesses={businesses} onUpdate={fetchData} goBack={() => window.history.back()} />} />
+      </Routes>
     </div>
   );
 }

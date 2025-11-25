@@ -1,21 +1,50 @@
 import React from 'react';
 import { ArrowLeft, Clock, Bike, Navigation, MessageCircle, Car } from 'lucide-react';
+import { DEFAULT_IMAGES } from '../constants/defaultImages';
 
 const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
   if (!selectedBusiness) return null;
+
+  // Helper to resolve image URL with type-specific defaults
+  const getImageUrl = (url, type = 'business') => {
+    if (!url) {
+      // Return specific default based on type
+      return DEFAULT_IMAGES[type] || DEFAULT_IMAGES.business;
+    }
+    if (url.startsWith('http')) return url;
+    return `http://localhost:3001${url}`;
+  };
+
+  // Helper to format time from 24h to 12h with AM/PM
+  const formatTime = (time24) => {
+    if (!time24) return '';
+    const [hours, minutes] = time24.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+  };
+
+  // Format business hours
+  const getFormattedHours = () => {
+    if (selectedBusiness.opening_time && selectedBusiness.closing_time) {
+      return `${formatTime(selectedBusiness.opening_time)} - ${formatTime(selectedBusiness.closing_time)}`;
+    }
+    return selectedBusiness.hours || 'No especificado';
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen animate-fadeIn w-full md:p-8">
       <div className="md:max-w-6xl md:mx-auto md:bg-white md:rounded-3xl md:shadow-xl md:overflow-hidden md:flex">
         {/* Imagen Grande Superior (Izquierda en Desktop) */}
         <div className="relative h-64 w-full md:h-auto md:w-1/2 md:min-h-[500px]">
-          <img src={selectedBusiness.image} alt={selectedBusiness.name} className="w-full h-full object-cover" />
+          <img src={getImageUrl(selectedBusiness.image, 'business')} alt={selectedBusiness.name} className="w-full h-full object-cover" />
           <button onClick={goBack} className="absolute top-4 left-4 bg-white/90 p-2 rounded-full shadow-lg backdrop-blur-sm hover:bg-white transition-colors">
             <ArrowLeft size={24} className="text-gray-800" />
           </button>
           {/* Logo */}
           <div className="absolute -bottom-8 left-4 bg-white p-1 rounded-2xl shadow-md md:bottom-4 md:left-4">
-            <img src={selectedBusiness.logo} alt="logo" className="w-16 h-16 rounded-xl object-cover" />
+            <img src={getImageUrl(selectedBusiness.logo, 'logo')} alt="logo" className="w-16 h-16 rounded-xl object-cover" />
           </div>
         </div>
 
@@ -32,7 +61,7 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
                   {/* Fila 1: Horario y Estado */}
                   <div className="flex items-center text-gray-500 text-xs md:text-sm">
                     <Clock size={14} className="mr-1.5 md:w-5 md:h-5" />
-                    <span>{selectedBusiness.hours}</span>
+                    <span>{getFormattedHours()}</span>
                     <span className="mx-2 text-gray-300">|</span>
                     
                     {(() => {
@@ -79,7 +108,7 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
                
                {/* BOTÓN COMO LLEGAR (GOOGLE MAPS) */}
                <button
-                 onClick={() => openGoogleMaps(selectedBusiness.name)}
+                 onClick={() => openGoogleMaps(selectedBusiness)}
                  className="flex items-center gap-1 text-[10px] font-bold text-[#193f3f] hover:underline bg-[#193f3f]/5 px-2 py-1 rounded-lg transition-colors md:text-xs md:px-3 md:py-1.5"
                >
                  <Navigation size={10} className="fill-current md:w-3 md:h-3" />
@@ -117,6 +146,35 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
             ))}
           </div>
 
+          {/* Métodos de Pago */}
+          {selectedBusiness.payment_methods && Object.values(selectedBusiness.payment_methods).some(v => v) && (
+            <div className="mb-6">
+              <h3 className="text-sm font-bold text-gray-700 mb-2 md:text-base">Métodos de Pago</h3>
+              <div className="flex gap-2 flex-wrap">
+                {selectedBusiness.payment_methods.cash && (
+                  <span className="px-3 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg font-medium border border-green-200 flex items-center gap-1">
+                    💵 Efectivo
+                  </span>
+                )}
+                {selectedBusiness.payment_methods.card && (
+                  <span className="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs rounded-lg font-medium border border-blue-200 flex items-center gap-1">
+                    💳 Datáfono
+                  </span>
+                )}
+                {selectedBusiness.payment_methods.nequi && (
+                  <span className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs rounded-lg font-medium border border-purple-200 flex items-center gap-1">
+                    📱 Nequi
+                  </span>
+                )}
+                {selectedBusiness.payment_methods.daviplata && (
+                  <span className="px-3 py-1.5 bg-red-50 text-red-700 text-xs rounded-lg font-medium border border-red-200 flex items-center gap-1">
+                    💰 Daviplata
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* CAMBIO: Galería de Fotos ÚNICA (antes duplicada) - Sin título */}
           <div className="mb-6">
              <div className="grid grid-cols-3 gap-2 md:grid-cols-4">
@@ -124,7 +182,7 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
                  selectedBusiness.gallery.map((imgUrl, idx) => (
                    <div key={idx} className="group relative rounded-lg overflow-hidden shadow-sm border border-gray-100 aspect-square bg-gray-200 cursor-pointer">
                       <img 
-                         src={imgUrl} 
+                         src={getImageUrl(imgUrl, 'gallery')} 
                          alt={`Foto ${idx + 1}`} 
                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
@@ -132,17 +190,32 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
                    </div>
                  ))
                ) : (
-                 <div className="col-span-3 text-center py-4 text-gray-400 text-xs">No hay fotos disponibles.</div>
+                 <div className="col-span-3 md:col-span-4 relative rounded-lg overflow-hidden shadow-sm border border-gray-100 aspect-video bg-gray-200">
+                    <img 
+                       src={DEFAULT_IMAGES.gallery} 
+                       alt="Sin fotos disponibles" 
+                       className="w-full h-full object-cover opacity-60"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                      <p className="text-white font-medium text-sm">No hay fotos disponibles</p>
+                    </div>
+                 </div>
                )}
              </div>
           </div>
 
           {/* Botones de Acción (Solo WhatsApp ahora) */}
           <div className="space-y-3 mb-6 md:mt-auto">
-            <button className="w-full bg-[#25D366] text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 shadow-md hover:bg-[#20bd5a] transition-colors md:py-4 md:text-lg">
+            <a 
+              href={selectedBusiness.whatsapp ? `https://wa.me/${selectedBusiness.whatsapp}` : '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`w-full bg-[#25D366] text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 shadow-md hover:bg-[#20bd5a] transition-colors md:py-4 md:text-lg ${!selectedBusiness.whatsapp ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={(e) => !selectedBusiness.whatsapp && e.preventDefault()}
+            >
               <MessageCircle size={20} className="md:w-6 md:h-6" />
               Contactar por WhatsApp
-            </button>
+            </a>
           </div>
         </div>
       </div>
