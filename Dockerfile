@@ -2,8 +2,8 @@
 FROM node:22-alpine as frontend-build
 WORKDIR /app
 COPY src/package*.json ./
-RUN npm ci
-COPY src .   
+RUN npm install
+COPY src .
 RUN npm run build
 
 # Stage 2: Setup Backend and Serve
@@ -13,7 +13,7 @@ WORKDIR /app
 # Backend deps
 COPY server/package*.json ./server/
 WORKDIR /app/server
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Copy backend code
 COPY server/ ./
