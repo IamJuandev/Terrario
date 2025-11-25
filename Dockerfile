@@ -1,9 +1,9 @@
 # Stage 1: Build Frontend
 FROM node:22-alpine as frontend-build
 WORKDIR /app
-COPY src/package*.json ./
+COPY package*.json ./
 RUN npm install
-COPY src .
+COPY . .
 RUN npm run build
 
 # Stage 2: Setup Backend and Serve
