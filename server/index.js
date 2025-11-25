@@ -17,6 +17,9 @@ const PORT = 3001;
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'public'))); // Serve frontend build
+
+// API routes are defined below...
 
 // Multer config (Memory storage for processing)
 const storage = multer.memoryStorage();
@@ -278,6 +281,11 @@ app.delete('/api/businesses/:id', (req, res) => {
       }
       res.json({ "message": "deleted", changes: this.changes });
   });
+});
+
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
