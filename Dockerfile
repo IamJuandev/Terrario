@@ -1,32 +1,28 @@
 # Stage 1: Build Frontend
 FROM node:22-alpine as frontend-build
 WORKDIR /app
-COPY package*.json ./
+COPY src/package*.json ./
 RUN npm ci
-COPY . .
+COPY src .   
 RUN npm run build
 
 # Stage 2: Setup Backend and Serve
 FROM node:22-alpine
 WORKDIR /app
 
-# Install backend dependencies
+# Backend deps
 COPY server/package*.json ./server/
 WORKDIR /app/server
-RUN npm ci --production
+RUN npm ci --omit=dev
 
 # Copy backend code
 COPY server/ ./
 
-# Copy built frontend from Stage 1
-# Assuming vite builds to /app/dist in the first stage
+# Copy frontend build
 COPY --from=frontend-build /app/dist ./public
 
-# Create uploads directory if it doesn't exist
+# Create uploads directory
 RUN mkdir -p uploads
 
-# Expose port
 EXPOSE 3001
-
-# Start server
 CMD ["node", "index.js"]
