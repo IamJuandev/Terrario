@@ -1,5 +1,5 @@
 # Stage 1: Build Frontend
-FROM node:18-alpine as frontend-build
+FROM node:22-alpine as frontend-build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Setup Backend and Serve
-FROM node:18-alpine
+FROM node:22-alpine
 WORKDIR /app
 
 # Install backend dependencies
