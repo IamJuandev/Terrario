@@ -43,7 +43,8 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
         card: false,
         nequi: false,
         daviplata: false
-      }
+      },
+      gallery: []
     });
     setFiles({ image: null, logo: null, gallery: [] });
     setIsEditing(true);

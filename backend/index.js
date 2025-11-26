@@ -129,7 +129,14 @@ app.post('/api/businesses', upload.fields([{ name: 'image', maxCount: 1 }, { nam
     
     let imageUrl = req.body.image || ''; // Fallback to text URL if provided
     let logoUrl = req.body.logo || '';
-    let galleryUrls = req.body.gallery ? JSON.parse(req.body.gallery) : [];
+
+    let galleryUrls = [];
+    try {
+      galleryUrls = req.body.gallery ? JSON.parse(req.body.gallery) : [];
+    } catch (e) {
+      console.error("Error parsing gallery JSON:", e);
+      galleryUrls = [];
+    }
 
     // Process uploaded files
     if (req.files['image']) {
@@ -192,7 +199,14 @@ app.put('/api/businesses/:id', upload.fields([{ name: 'image', maxCount: 1 }, { 
     
     let imageUrl = req.body.image;
     let logoUrl = req.body.logo;
-    let galleryUrls = req.body.gallery ? JSON.parse(req.body.gallery) : null; // Existing gallery URLs
+
+    let galleryUrls = null;
+    try {
+       galleryUrls = req.body.gallery ? JSON.parse(req.body.gallery) : null; // Existing gallery URLs
+    } catch (e) {
+       console.error("Error parsing gallery JSON:", e);
+       galleryUrls = [];
+    }
 
     if (req.files['image']) {
       imageUrl = await processImage(req.files['image'][0]);
