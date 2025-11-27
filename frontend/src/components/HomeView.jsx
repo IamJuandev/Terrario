@@ -80,7 +80,7 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick 
         <div className="flex justify-between items-end mb-4">
           <h3 className="text-lg font-bold text-gray-800">Cerca de ti</h3>
           <button className="text-[#193f3f] text-xs font-semibold flex items-center" onClick={() => onSeeMore('nearby')}>
-            Ver más <ArrowRight size={14} className="ml-1" />
+            Ver todos <ArrowRight size={14} className="ml-1" />
           </button>
         </div>
         <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:pb-0">
@@ -116,7 +116,7 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick 
         <div className="flex justify-between items-end mb-4">
           <h3 className="text-lg font-bold text-gray-800">Los más populares</h3>
           <button className="text-[#193f3f] text-xs font-semibold flex items-center" onClick={() => onSeeMore('popular')}>
-            Ver más <ArrowRight size={14} className="ml-1" />
+            Ver todos <ArrowRight size={14} className="ml-1" />
           </button>
         </div>
         

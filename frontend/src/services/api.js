@@ -1,5 +1,6 @@
 // CÓDIGO NUEVO (Corrección forzada):
 const API_URL = 'http://149.130.164.160:3001/api';
+//const API_URL = 'http://localhost:3001/api';
 
 export const getBusinesses = async () => {
   const response = await fetch(`${API_URL}/businesses`);

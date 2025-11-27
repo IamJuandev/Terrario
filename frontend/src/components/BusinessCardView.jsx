@@ -175,6 +175,20 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
             </div>
           )}
 
+          {/* Botones de Acción (Solo WhatsApp ahora) */}
+          <div className="space-y-3 mb-6 md:mt-auto">
+            <a 
+              href={selectedBusiness.whatsapp ? `https://wa.me/${selectedBusiness.whatsapp}` : '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`w-full bg-[#25D366] text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 shadow-md hover:bg-[#20bd5a] transition-colors md:py-4 md:text-lg ${!selectedBusiness.whatsapp ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={(e) => !selectedBusiness.whatsapp && e.preventDefault()}
+            >
+              <MessageCircle size={20} className="md:w-6 md:h-6" />
+              Contactar por WhatsApp
+            </a>
+          </div>
+
           {/* CAMBIO: Galería de Fotos ÚNICA (antes duplicada) - Sin título */}
           <div className="mb-6">
              <div className="grid grid-cols-3 gap-2 md:grid-cols-4">
@@ -204,19 +218,6 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
              </div>
           </div>
 
-          {/* Botones de Acción (Solo WhatsApp ahora) */}
-          <div className="space-y-3 mb-6 md:mt-auto">
-            <a 
-              href={selectedBusiness.whatsapp ? `https://wa.me/${selectedBusiness.whatsapp}` : '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`w-full bg-[#25D366] text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 shadow-md hover:bg-[#20bd5a] transition-colors md:py-4 md:text-lg ${!selectedBusiness.whatsapp ? 'opacity-50 cursor-not-allowed' : ''}`}
-              onClick={(e) => !selectedBusiness.whatsapp && e.preventDefault()}
-            >
-              <MessageCircle size={20} className="md:w-6 md:h-6" />
-              Contactar por WhatsApp
-            </a>
-          </div>
         </div>
       </div>
     </div>

@@ -131,12 +131,12 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
 
   if (isEditing) {
     return (
-      <div className="p-6 bg-white min-h-screen">
+      <div className="p-4 md:p-6 bg-white min-h-screen">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">{currentBusiness ? 'Editar Negocio' : 'Nuevo Negocio'}</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800">{currentBusiness ? 'Editar Negocio' : 'Nuevo Negocio'}</h2>
           <button onClick={() => setIsEditing(false)} className="p-2 rounded-full hover:bg-gray-100"><X size={24} /></button>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl mx-auto">
+        <form onSubmit={handleSubmit} className="space-y-4 max-w-3xl mx-auto">
           <div>
             <label className="block text-sm font-medium text-gray-700">Nombre</label>
             <input type="text" name="name" value={formData.name || ''} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" required />
@@ -155,7 +155,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
             <label className="block text-sm font-medium text-gray-700">Especialidad</label>
             <input type="text" name="specialty" value={formData.specialty || ''} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <div>
                 <label className="block text-sm font-medium text-gray-700">Hora de Apertura</label>
                 <input 
@@ -232,7 +232,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
           
           <div className="border-t pt-4">
             <h3 className="text-sm font-medium text-gray-900 mb-3">Métodos de Pago</h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="flex items-center">
                 <input 
                   type="checkbox" 
@@ -310,7 +310,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
             <textarea name="description" value={formData.description || ''} onChange={handleChange} rows={3} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <div>
                 <label className="block text-sm font-medium text-gray-700">Latitud</label>
                 <input type="text" name="latitude" value={formData.latitude || ''} onChange={handleChange} placeholder="Ej: 4.60971" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" />
@@ -324,7 +324,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
           {/* Distances */}
           <div className="border-t pt-4">
             <h3 className="text-sm font-medium text-gray-900 mb-2">Distancias</h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label className="block text-xs text-gray-500">Caminando</label>
                     <input type="text" value={formData.distances?.walk || ''} onChange={(e) => handleNestedChange('distances', 'walk', e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2 border" />
@@ -351,20 +351,54 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
         <div className="flex items-center">
             <button onClick={goBack} className="mr-4 text-gray-500 hover:text-gray-700">
                 &larr; Volver
             </button>
-            <h1 className="text-3xl font-bold text-gray-900">Administración</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Administración</h1>
         </div>
-        <button onClick={handleCreate} className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
+        <button onClick={handleCreate} className="w-full md:w-auto flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
           <Plus size={20} className="mr-2" /> Nuevo Negocio
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+      {/* Mobile Cards View */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {businesses.map((biz) => (
+          <div key={biz.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex gap-4">
+            <div className="flex-shrink-0 h-16 w-16">
+               {biz.logo ? (
+                 <img className="h-16 w-16 rounded-lg object-cover" src={biz.logo.startsWith('http') ? biz.logo : `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${biz.logo}`} alt="" />
+               ) : (
+                 <img className="h-16 w-16 rounded-lg object-cover" src={DEFAULT_IMAGES.logo} alt="default logo" />
+               )}
+            </div>
+            <div className="flex-1 min-w-0">
+               <div className="flex justify-between items-start">
+                 <div>
+                    <h3 className="text-base font-bold text-gray-900 truncate">{biz.name}</h3>
+                    <p className="text-xs text-gray-500 truncate">{biz.specialty}</p>
+                 </div>
+                 <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full ${biz.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                    {biz.status === 'open' ? 'Abierto' : 'Cerrado'}
+                 </span>
+               </div>
+               <div className="mt-2 flex justify-between items-center">
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">{biz.category}</span>
+                  <div className="flex gap-3">
+                    <button onClick={() => handleEdit(biz)} className="text-indigo-600 hover:text-indigo-900"><Edit size={18} /></button>
+                    <button onClick={() => handleDelete(biz.id)} className="text-red-600 hover:text-red-900"><Trash2 size={18} /></button>
+                  </div>
+               </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
