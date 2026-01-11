@@ -8,6 +8,18 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
   const [currentBusiness, setCurrentBusiness] = useState(null);
   const [formData, setFormData] = useState({});
   const [files, setFiles] = useState({ image: null, logo: null, gallery: [] });
+  
+  // Filters state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterZone, setFilterZone] = useState('Todas');
+  
+  // Filtered businesses
+  const filteredBusinesses = businesses.filter(biz => {
+    const matchesSearch = biz.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          biz.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesZone = filterZone === 'Todas' || (biz.zone || 'Las Acacias') === filterZone;
+    return matchesSearch && matchesZone;
+  });
 
   const handleEdit = (business) => {
     setCurrentBusiness(business);
@@ -134,6 +146,13 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
     }
   };
 
+  const handleRemoveGalleryImage = (indexToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      gallery: prev.gallery.filter((_, index) => index !== indexToRemove)
+    }));
+  };
+
   if (isEditing) {
     return (
       <div className="p-4 md:p-6 bg-white min-h-screen">
@@ -142,6 +161,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
           <button onClick={() => setIsEditing(false)} className="p-2 rounded-full hover:bg-gray-100"><X size={24} /></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4 max-w-3xl mx-auto">
+          {/* ... existing fields ... */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Nombre</label>
             <input type="text" name="name" value={formData.name || ''} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" required />
@@ -311,9 +331,40 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
                     {formData.logo && <p className="text-xs text-gray-500 mt-1">Actual: {formData.logo}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Galería (Seleccionar múltiples)</label>
-                    <input type="file" name="gallery" accept="image/*" multiple onChange={handleFileChange} className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                    {formData.gallery && formData.gallery.length > 0 && <p className="text-xs text-gray-500 mt-1">{formData.gallery.length} imágenes actuales</p>}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Galería</label>
+                    
+                    {/* Existing Gallery Images */}
+                    {formData.gallery && formData.gallery.length > 0 && (
+                      <div className="grid grid-cols-3 gap-2 mb-3">
+                        {formData.gallery.map((img, index) => (
+                           <div key={index} className="relative group">
+                             <img 
+                               src={img.startsWith('http') ? img : `${import.meta.env.VITE_API_URL || ''}${img}`} 
+                               alt={`Gallery ${index}`} 
+                               className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                             />
+                             <button 
+                               type="button"
+                               onClick={() => handleRemoveGalleryImage(index)}
+                               className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                             >
+                               <X size={12} />
+                             </button>
+                           </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-center w-full">
+                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <Upload size={24} className="text-gray-400 mb-2" />
+                                <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click para agregar</span> o arrastra imágenes</p>
+                                <p className="text-xs text-gray-500">Puedes seleccionar múltiples</p>
+                            </div>
+                            <input type="file" name="gallery" accept="image/*" multiple onChange={handleFileChange} className="hidden" />
+                        </label>
+                    </div>
                 </div>
              </div>
           </div>
@@ -363,17 +414,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
     );
   }
 
-  // Filters state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterZone, setFilterZone] = useState('Todas');
 
-  // Filtered businesses
-  const filteredBusinesses = businesses.filter(biz => {
-    const matchesSearch = biz.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          biz.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesZone = filterZone === 'Todas' || (biz.zone || 'Las Acacias') === filterZone;
-    return matchesSearch && matchesZone;
-  });
 
   return (
     <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
