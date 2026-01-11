@@ -51,8 +51,10 @@ const toBoolean = (value) => {
 const calculateBusinessStatus = (opening_time, closing_time) => {
   if (!opening_time || !closing_time) return 'closed';
   
+  // Calculate current time in Colombia (Bogota)
   const now = new Date();
-  const currentTime = now.getHours() * 60 + now.getMinutes(); // Current time in minutes
+  const colombiaTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Bogota" }));
+  const currentTime = colombiaTime.getHours() * 60 + colombiaTime.getMinutes(); // Current time in minutes
   
   // Parse opening time (format: "HH:MM")
   const [openHour, openMin] = opening_time.split(':').map(Number);
