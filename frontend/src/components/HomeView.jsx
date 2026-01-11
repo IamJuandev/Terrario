@@ -48,7 +48,7 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick,
     return (
       biz.name.toLowerCase().includes(lowerTerm) ||
       biz.specialty.toLowerCase().includes(lowerTerm) ||
-      (biz.keywords && biz.keywords.toLowerCase().includes(lowerTerm))
+      (biz.keywords && Array.isArray(biz.keywords) && biz.keywords.some(k => k && k.toLowerCase().includes(lowerTerm)))
     );
   });
   
