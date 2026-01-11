@@ -22,17 +22,42 @@ function PublicApp({ businesses, fetchData }) {
     setCurrentView('restaurant');
   };
 
+  // Helper to resolve zone from URL (duplicated from HomeView for now)
+  const getZoneInfo = (slug) => {
+    if (!slug) return { name: "Las Acacias", filter: "Las Acacias" }; 
+    
+    const normalized = slug.toLowerCase().replace(/-/g, '').replace(/ /g, '');
+    
+    if (normalized.includes("acacias")) return { name: "Las Acacias", filter: "Las Acacias" };
+    if (normalized.includes("cecilia")) return { name: "Nueva Cecilia", filter: "Nueva Cecilia" };
+    if (normalized.includes("bota")) return { name: "La Bota", filter: "La Bota" };
+
+    const formatted = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    return { name: formatted, filter: formatted };
+  };
+
   const handleSeeMore = (type) => {
+    const currentZone = getZoneInfo(zone);
+    // Filter by Zone first
+    let filtered = businesses.filter(biz => (biz.zone || 'Las Acacias') === currentZone.filter);
+
     if (type === 'nearby') {
-      setListingConfig({ title: 'Cerca de ti', items: businesses });
+      // Also filter by type to be consistent
+      filtered = filtered.filter(biz => biz.is_nearby);
+      setListingConfig({ title: 'Cerca de ti', items: filtered });
     } else if (type === 'popular') {
-      setListingConfig({ title: 'Los más populares', items: businesses });
+      filtered = filtered.filter(biz => biz.is_popular);
+      setListingConfig({ title: 'Los más populares', items: filtered });
     }
     setCurrentView('listing');
   };
 
   const handleCategoryClick = (categoryName) => {
-    const filteredItems = businesses.filter(biz => biz.category === categoryName);
+    const currentZone = getZoneInfo(zone);
+    const filteredItems = businesses.filter(biz => 
+      biz.category === categoryName && 
+      (biz.zone || 'Las Acacias') === currentZone.filter
+    );
     setListingConfig({ title: categoryName, items: filteredItems });
     setCurrentView('listing');
   };
