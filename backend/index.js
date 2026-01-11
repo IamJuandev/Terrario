@@ -134,7 +134,8 @@ app.post('/api/businesses', upload.fields([{ name: 'image', maxCount: 1 }, { nam
 
     let galleryUrls = [];
     try {
-      galleryUrls = req.body.gallery ? JSON.parse(req.body.gallery) : [];
+      const rawGallery = req.body.gallery_json || req.body.gallery;
+      galleryUrls = rawGallery ? JSON.parse(rawGallery) : [];
     } catch (e) {
       console.error("Error parsing gallery JSON:", e);
       galleryUrls = [];
@@ -205,7 +206,9 @@ app.put('/api/businesses/:id', upload.fields([{ name: 'image', maxCount: 1 }, { 
 
     let galleryUrls = null;
     try {
-       galleryUrls = req.body.gallery ? JSON.parse(req.body.gallery) : null; // Existing gallery URLs
+       // Look for gallery_json (new frontend) or gallery (fallback)
+       const rawGallery = req.body.gallery_json || req.body.gallery;
+       galleryUrls = rawGallery ? JSON.parse(rawGallery) : null; 
     } catch (e) {
        console.error("Error parsing gallery JSON:", e);
        galleryUrls = [];
@@ -243,7 +246,6 @@ app.put('/api/businesses/:id', upload.fields([{ name: 'image', maxCount: 1 }, { 
       longitude = COALESCE(?,longitude),
       whatsapp = COALESCE(?,whatsapp),
       is_popular = COALESCE(?,is_popular),
-      is_nearby = COALESCE(?,is_nearby),
       is_nearby = COALESCE(?,is_nearby),
       payment_methods = COALESCE(?,payment_methods),
       zone = COALESCE(?,zone)

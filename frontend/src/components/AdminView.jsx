@@ -14,7 +14,8 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
     setFormData({ 
       ...business,
       is_popular: Boolean(business.is_popular),
-      is_nearby: Boolean(business.is_nearby)
+      is_nearby: Boolean(business.is_nearby),
+      zone: business.zone || 'Las Acacias'
     });
     setFiles({ image: null, logo: null, gallery: [] });
     setIsEditing(true);
@@ -100,8 +101,11 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
       const data = new FormData();
       
       // Append text fields
+      // Append text fields
       Object.keys(formData).forEach(key => {
-        if (key === 'distances' || key === 'keywords' || key === 'gallery' || key === 'payment_methods') {
+        if (key === 'gallery') {
+           data.append('gallery_json', JSON.stringify(formData[key]));
+        } else if (key === 'distances' || key === 'keywords' || key === 'payment_methods') {
           data.append(key, JSON.stringify(formData[key]));
         } else if (formData[key] !== null && formData[key] !== undefined) {
           data.append(key, formData[key]);
@@ -414,6 +418,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Negocio</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sede</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
@@ -442,6 +447,9 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {biz.status}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {biz.zone || 'Las Acacias'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button onClick={() => handleEdit(biz)} className="text-indigo-600 hover:text-indigo-900 mr-4"><Edit size={18} /></button>

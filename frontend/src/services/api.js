@@ -3,7 +3,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || '';
 const API_URL = `${BASE_URL}/api`;
 
 export const getBusinesses = async () => {
-  const response = await fetch(`${API_URL}/businesses`);
+  const response = await fetch(`${API_URL}/businesses?t=${Date.now()}`);
   if (!response.ok) throw new Error('Failed to fetch businesses');
   return response.json();
 };
