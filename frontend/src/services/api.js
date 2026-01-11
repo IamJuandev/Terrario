@@ -1,5 +1,6 @@
-// La URL se carga automáticamente según el entorno (.env.development o .env.production)
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+// La URL base viene del entorno. En produccion es el dominio, en desarrollo es vacío (o localhost)
+const BASE_URL = import.meta.env.VITE_API_URL || ''; 
+const API_URL = `${BASE_URL}/api`;
 
 export const getBusinesses = async () => {
   const response = await fetch(`${API_URL}/businesses`);

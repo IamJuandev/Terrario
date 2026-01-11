@@ -10,7 +10,7 @@ const ListingView = ({ title, businesses, goBack, handleBusinessClick }) => {
       return DEFAULT_IMAGES[type] || DEFAULT_IMAGES.business;
     }
     if (url.startsWith('http')) return url;
-    return `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${url}`;
+    return `${import.meta.env.VITE_API_URL || ''}${url}`;
   };
 
   const filteredBusinesses = businesses.filter(biz => {

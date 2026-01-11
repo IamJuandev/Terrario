@@ -334,7 +334,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
                     <input type="text" value={formData.distances?.car || ''} onChange={(e) => handleNestedChange('distances', 'car', e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2 border" />
                 </div>
                 <div>
-                    <label className="block text-xs text-gray-500">Bici</label>
+                    <label className="block text-xs text-gray-500">Moto</label>
                     <input type="text" value={formData.distances?.bike || ''} onChange={(e) => handleNestedChange('distances', 'bike', e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2 border" />
                 </div>
             </div>
@@ -370,7 +370,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
           <div key={biz.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex gap-4">
             <div className="flex-shrink-0 h-16 w-16">
                {biz.logo ? (
-                 <img className="h-16 w-16 rounded-lg object-cover" src={biz.logo.startsWith('http') ? biz.logo : `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${biz.logo}`} alt="" />
+                 <img className="h-16 w-16 rounded-lg object-cover" src={biz.logo.startsWith('http') ? biz.logo : `${import.meta.env.VITE_API_URL || ''}${biz.logo}`} alt="" />
                ) : (
                  <img className="h-16 w-16 rounded-lg object-cover" src={DEFAULT_IMAGES.logo} alt="default logo" />
                )}
@@ -415,7 +415,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10">
                       {biz.logo ? (
-                        <img className="h-10 w-10 rounded-full object-cover" src={biz.logo.startsWith('http') ? biz.logo : `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${biz.logo}`} alt="" />
+                        <img className="h-10 w-10 rounded-full object-cover" src={biz.logo.startsWith('http') ? biz.logo : `${import.meta.env.VITE_API_URL || ''}${biz.logo}`} alt="" />
                       ) : (
                         <img className="h-10 w-10 rounded-full object-cover" src={DEFAULT_IMAGES.logo} alt="default logo" />
                       )}

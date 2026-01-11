@@ -12,7 +12,7 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
       return DEFAULT_IMAGES[type] || DEFAULT_IMAGES.business;
     }
     if (url.startsWith('http')) return url;
-    return `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${url}`;
+    return `${import.meta.env.VITE_API_URL || ''}${url}`;
   };
 
   // Helper to format time from 24h to 12h with AM/PM
