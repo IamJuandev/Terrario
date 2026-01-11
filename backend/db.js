@@ -131,6 +131,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Medicamentos", "Farmacia"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3000000000", // Placeholder as it was incomplete
     latitude: "4.521806",
     longitude: "-75.689583"
@@ -150,6 +151,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Carnes", "Asados", "Barril"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3143511870",
     latitude: "4.521806",
     longitude: "-75.689389"
@@ -169,6 +171,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Helados", "Frutas", "Postres"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3213113737",
     latitude: "4.522139",
     longitude: "-75.689889"
@@ -188,6 +191,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Pollo", "Asado"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3103131115",
     latitude: "4.522111",
     longitude: "-75.690111"
@@ -207,6 +211,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Arepas", "Rellenas"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3212127100",
     latitude: "4.522194",
     longitude: "-75.690389"
@@ -226,6 +231,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Crepes", "Waffles", "Postres"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3153538282",
     latitude: "4.522194",
     longitude: "-75.690389"
@@ -245,6 +251,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Hamburguesas", "Comidas Rápidas"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "",
     latitude: "",
     longitude: ""
@@ -264,6 +271,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Hamburguesas", "Artesanal"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3108426039",
     latitude: "",
     longitude: ""
@@ -283,6 +291,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Pizza", "Italiana", "Pasta"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3232857584",
     latitude: "4.522306",
     longitude: "-75.690472"
@@ -302,6 +311,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Droguería", "Medicamentos"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "",
     latitude: "4.522556",
     longitude: "-75.690806"
@@ -321,6 +331,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Supermercado", "Víveres"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "",
     latitude: "4.522556",
     longitude: "-75.691000"
@@ -340,6 +351,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Hamburguesas", "Artesanal"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3011203306",
     latitude: "4.522778",
     longitude: "-75.692083"
@@ -359,6 +371,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Supermercado", "Descuentos"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "",
     latitude: "4.522417",
     longitude: "-75.692917"
@@ -378,6 +391,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Variedades", "Hogar"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "",
     latitude: "4.521528",
     longitude: "-75.693194"
@@ -397,6 +411,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Arepas", "Asado"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3127488122",
     latitude: "4.521583",
     longitude: "-75.692917"
@@ -416,6 +431,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Arroz", "Comidas"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3162692064",
     latitude: "4.521583",
     longitude: "-75.692917"
@@ -435,6 +451,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Sandwich", "Cubano"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "3122509019",
     latitude: "4.521583",
     longitude: "-75.692917"
@@ -454,6 +471,7 @@ const BUSINESSES_DATA = [
     keywords: JSON.stringify(["Supermercado", "Frutas", "Verduras"]),
     description: "",
     gallery: JSON.stringify([]),
+    zone: "Las Acacias",
     whatsapp: "",
     latitude: "4.521639",
     longitude: "-75.692944"
@@ -482,7 +500,8 @@ function initDb() {
     whatsapp TEXT,
     is_popular INTEGER DEFAULT 0,
     is_nearby INTEGER DEFAULT 0,
-    payment_methods TEXT
+    payment_methods TEXT,
+    zone TEXT
   )`, (err) => {
     if (err) {
       console.error(err.message);
@@ -513,6 +532,9 @@ function initDb() {
       db.run("ALTER TABLE businesses ADD COLUMN payment_methods TEXT", (err) => {
         if (!err) console.log("Added payment_methods column");
       });
+      db.run("ALTER TABLE businesses ADD COLUMN zone TEXT", (err) => {
+        if (!err) console.log("Added zone column");
+      });
       seedData();
     }
   });
@@ -525,10 +547,10 @@ function seedData() {
     }
     if (row.count === 0) {
       console.log("Seeding data...");
-      const stmt = db.prepare(`INSERT INTO businesses (name, category, specialty, deliveryTime, image, logo, hours, status, distances, keywords, description, gallery) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+      const stmt = db.prepare(`INSERT INTO businesses (name, category, specialty, deliveryTime, image, logo, hours, status, distances, keywords, description, gallery, zone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
       
       BUSINESSES_DATA.forEach(biz => {
-        stmt.run(biz.name, biz.category, biz.specialty, biz.deliveryTime, biz.image, biz.logo, biz.hours, biz.status, biz.distances, biz.keywords, biz.description, biz.gallery);
+        stmt.run(biz.name, biz.category, biz.specialty, biz.deliveryTime, biz.image, biz.logo, biz.hours, biz.status, biz.distances, biz.keywords, biz.description, biz.gallery, biz.zone || 'Las Acacias');
       });
       
       stmt.finalize();

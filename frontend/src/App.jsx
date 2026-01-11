@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import HomeView from './components/HomeView';
 import BusinessCardView from './components/BusinessCardView';
 import RestaurantView from './components/RestaurantView';
@@ -8,6 +8,7 @@ import AdminView from './components/AdminView';
 import { getBusinesses } from './services/api';
 
 function PublicApp({ businesses, fetchData }) {
+  const { zone } = useParams();
   const [currentView, setCurrentView] = useState('home'); 
   const [selectedBusiness, setSelectedBusiness] = useState(null);
   const [listingConfig, setListingConfig] = useState({ title: '', items: [] });
@@ -64,6 +65,7 @@ function PublicApp({ businesses, fetchData }) {
           handleBusinessClick={handleBusinessClick} 
           onSeeMore={handleSeeMore} 
           onCategoryClick={handleCategoryClick} 
+          zone={zone}
         />
       )}
       {currentView === 'card' && <BusinessCardView selectedBusiness={selectedBusiness} goBack={goBack} openGoogleMaps={openGoogleMaps} />}
@@ -104,6 +106,7 @@ export default function App() {
     <div className="font-poppins bg-gray-50 min-h-screen max-w-7xl mx-auto shadow-2xl border-x border-gray-200 overflow-hidden relative text-gray-800">
       <Routes>
         <Route path="/" element={<PublicApp businesses={businesses} fetchData={fetchData} />} />
+        <Route path="/:zone" element={<PublicApp businesses={businesses} fetchData={fetchData} />} />
         <Route path="/manager" element={<AdminView businesses={businesses} onUpdate={fetchData} goBack={() => window.history.back()} />} />
       </Routes>
     </div>

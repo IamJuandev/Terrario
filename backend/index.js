@@ -127,7 +127,7 @@ app.get('/api/businesses/:id', (req, res) => {
 // Create new business
 app.post('/api/businesses', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'logo', maxCount: 1 }, { name: 'gallery', maxCount: 10 }]), async (req, res) => {
   try {
-    const { name, category, specialty, deliveryTime, hours, opening_time, closing_time, distances, keywords, description, latitude, longitude, whatsapp, is_popular, is_nearby, payment_methods } = req.body;
+    const { name, category, specialty, deliveryTime, hours, opening_time, closing_time, distances, keywords, description, latitude, longitude, whatsapp, is_popular, is_nearby, payment_methods, zone } = req.body;
     
     let imageUrl = req.body.image || ''; // Fallback to text URL if provided
     let logoUrl = req.body.logo || '';
@@ -154,7 +154,7 @@ app.post('/api/businesses', upload.fields([{ name: 'image', maxCount: 1 }, { nam
       }
     }
 
-    const sql = 'INSERT INTO businesses (name, category, specialty, deliveryTime, image, logo, hours, opening_time, closing_time, distances, keywords, description, gallery, latitude, longitude, whatsapp, is_popular, is_nearby, payment_methods) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    const sql = 'INSERT INTO businesses (name, category, specialty, deliveryTime, image, logo, hours, opening_time, closing_time, distances, keywords, description, gallery, latitude, longitude, whatsapp, is_popular, is_nearby, payment_methods, zone) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
     const params = [
       name, 
       category, 
@@ -174,7 +174,8 @@ app.post('/api/businesses', upload.fields([{ name: 'image', maxCount: 1 }, { nam
       whatsapp,
       toBoolean(is_popular) ? 1 : 0,
       toBoolean(is_nearby) ? 1 : 0,
-      payment_methods
+      payment_methods,
+      req.body.zone // Add zone to params
     ];
     
     db.run(sql, params, function (err, result) {
@@ -243,7 +244,9 @@ app.put('/api/businesses/:id', upload.fields([{ name: 'image', maxCount: 1 }, { 
       whatsapp = COALESCE(?,whatsapp),
       is_popular = COALESCE(?,is_popular),
       is_nearby = COALESCE(?,is_nearby),
-      payment_methods = COALESCE(?,payment_methods)
+      is_nearby = COALESCE(?,is_nearby),
+      payment_methods = COALESCE(?,payment_methods),
+      zone = COALESCE(?,zone)
       WHERE id = ?`;
       
     const params = [
@@ -266,6 +269,7 @@ app.put('/api/businesses/:id', upload.fields([{ name: 'image', maxCount: 1 }, { 
       is_popular !== undefined ? (toBoolean(is_popular) ? 1 : 0) : null,
       is_nearby !== undefined ? (toBoolean(is_nearby) ? 1 : 0) : null,
       payment_methods,
+      req.body.zone,
       req.params.id
     ];
 

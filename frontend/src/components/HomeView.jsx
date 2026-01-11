@@ -4,7 +4,7 @@ import logoWhite from '../assets/logo-white.svg';
 import { CATEGORIES } from '../data/mockData';
 import { DEFAULT_IMAGES } from '../constants/defaultImages';
 
-const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick }) => {
+const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick, zone }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const getImageUrl = (url, type = 'business') => {
@@ -14,6 +14,49 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick 
     if (url.startsWith('http')) return url;
     return `${import.meta.env.VITE_API_URL || ''}${url}`;
   };
+
+  // Helper to format zone slug to display name and DB value
+  // e.g. "las-acacias" -> "Las Acacias"
+  // e.g. "labota" -> "La Bota" 
+  const getZoneInfo = (slug) => {
+    if (!slug) return { name: "Las Acacias", filter: "Las Acacias" }; // Default 
+    
+    const normalized = slug.toLowerCase().replace(/-/g, '').replace(/ /g, '');
+    
+    if (normalized.includes("acacias")) return { name: "Las Acacias", filter: "Las Acacias" };
+    if (normalized.includes("cecilia")) return { name: "Nueva Cecilia", filter: "Nueva Cecilia" };
+    if (normalized.includes("bota")) return { name: "La Bota", filter: "La Bota" };
+
+    // Fallback: capitalize
+    const formatted = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    return { name: formatted, filter: formatted };
+  };
+
+  const currentZone = getZoneInfo(zone);
+
+  // Filter businesses by zone and search term
+  const filteredBusinesses = businesses.filter(biz => {
+    // Filter by Zone
+    const bizZone = biz.zone || 'Las Acacias'; // Default old records to Las Acacias
+    const matchZone = bizZone === currentZone.filter;
+    
+    if (!matchZone) return false;
+
+    // Filter by Search
+    if (!searchTerm) return true;
+    const lowerTerm = searchTerm.toLowerCase();
+    return (
+      biz.name.toLowerCase().includes(lowerTerm) ||
+      biz.specialty.toLowerCase().includes(lowerTerm) ||
+      (biz.keywords && biz.keywords.toLowerCase().includes(lowerTerm))
+    );
+  });
+  
+  // Use filteredBusinesses instead of businesses for the lists sections? 
+  // The original code passed 'businesses' to sections and did .filter() inside.
+  // We should pass 'filteredBusinesses' to those sections or apply the filter there too.
+  // Actually, filtering by Zone should happen BEFORE section filtering (IsNearby, IsPopular).
+  // So 'businesses' in the map below should be 'filteredBusinesses'.
 
   return (
     <div className="flex flex-col pb-20 animate-fadeIn relative min-h-screen w-full bg-gray-50">
@@ -46,7 +89,7 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick 
         <div className="bg-gradient-to-r from-[#193f3f] to-[#255050] rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
           <div className="relative z-10">
             <h2 className="text-3xl font-bold mb-1">Bienvenido/a a Terrario</h2>
-            <p className="text-[#a8babb] text-2xl mb-4 font-medium">Las Acacias</p>
+            <p className="text-[#a8babb] text-2xl mb-4 font-medium">{currentZone.name}</p>
             <p className="font-medium text-lg">Encuentra aquí todo lo que necesitas</p>
           </div>
           
@@ -84,7 +127,7 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick 
           </button>
         </div>
         <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:pb-0">
-          {businesses.filter(biz => biz.is_nearby == 1).slice(0, 5).map(biz => (
+          {filteredBusinesses.filter(biz => biz.is_nearby == 1).slice(0, 5).map(biz => (
              <div 
                key={biz.id} 
                className="min-w-[160px] bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer" 
@@ -121,7 +164,7 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick 
         </div>
         
         <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory pb-4 scrollbar-hide md:grid md:grid-cols-2 lg:grid-cols-4 md:overflow-visible md:pb-0">
-           {businesses.filter(biz => biz.is_popular == 1).slice(0,4).map((biz) => (
+           {filteredBusinesses.filter(biz => biz.is_popular == 1).slice(0,4).map((biz) => (
              <div 
                key={biz.id} 
                className="snap-center min-w-[280px] bg-white rounded-2xl shadow-md overflow-hidden flex flex-col relative border border-gray-100 hover:shadow-lg transition-shadow"
