@@ -1,6 +1,5 @@
-// CÓDIGO NUEVO (Corrección forzada):
-const API_URL = 'http://149.130.164.160:3001/api';
-//const API_URL = 'http://localhost:3001/api';
+// La URL se carga automáticamente según el entorno (.env.development o .env.production)
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 export const getBusinesses = async () => {
   const response = await fetch(`${API_URL}/businesses`);
