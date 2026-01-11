@@ -363,6 +363,18 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
     );
   }
 
+  // Filters state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterZone, setFilterZone] = useState('Todas');
+
+  // Filtered businesses
+  const filteredBusinesses = businesses.filter(biz => {
+    const matchesSearch = biz.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          biz.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesZone = filterZone === 'Todas' || (biz.zone || 'Las Acacias') === filterZone;
+    return matchesSearch && matchesZone;
+  });
+
   return (
     <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
@@ -377,9 +389,36 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
         </button>
       </div>
 
+      {/* Filters Bar */}
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col md:flex-row gap-4">
+        <div className="flex-1">
+          <label className="block text-xs font-medium text-gray-500 mb-1">Buscar</label>
+          <input 
+            type="text" 
+            placeholder="Buscar por nombre o categoría..." 
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="w-full md:w-64">
+           <label className="block text-xs font-medium text-gray-500 mb-1">Filtrar por Sede</label>
+           <select 
+             className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+             value={filterZone}
+             onChange={(e) => setFilterZone(e.target.value)}
+           >
+             <option value="Todas">Todas las sedes</option>
+             <option value="Las Acacias">Las Acacias</option>
+             <option value="Nueva Cecilia">Nueva Cecilia</option>
+             <option value="La Bota">La Bota</option>
+           </select>
+        </div>
+      </div>
+
       {/* Mobile Cards View */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
-        {businesses.map((biz) => (
+        {filteredBusinesses.map((biz) => (
           <div key={biz.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex gap-4">
             <div className="flex-shrink-0 h-16 w-16">
                {biz.logo ? (
@@ -423,7 +462,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {businesses.map((biz) => (
+            {filteredBusinesses.map((biz) => (
               <tr key={biz.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
