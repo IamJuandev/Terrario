@@ -1,10 +1,21 @@
 import sqlite3 from 'sqlite3';
 
-const db = new sqlite3.Database('./terrario.db', (err) => {
+import fs from 'fs';
+import path from 'path';
+
+// Ensure data directory exists
+const dataDir = path.join(process.cwd(), 'data');
+if (!fs.existsSync(dataDir)){
+    fs.mkdirSync(dataDir);
+}
+
+const dbPath = path.join(dataDir, 'terrario.db');
+
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Error opening database', err.message);
   } else {
-    console.log('Connected to the SQLite database.');
+    console.log('Connected to the SQLite database at ' + dbPath);
     initDb();
   }
 });
