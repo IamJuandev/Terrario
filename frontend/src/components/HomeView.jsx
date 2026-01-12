@@ -102,11 +102,11 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick,
       {/* Categorías */}
       <div className="px-4 mb-8">
         <h2 className="text-lg font-bold text-gray-800 mb-4">Categorías</h2>
-        <div className="flex overflow-x-auto gap-6 pb-2 scrollbar-hide md:grid md:grid-cols-5 md:overflow-visible md:pb-0 px-1">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-8 px-1">
           {CATEGORIES.map(cat => (
             <button 
               key={cat.id} 
-              className="flex-shrink-0 flex flex-col items-center w-24 gap-2 cursor-pointer hover:opacity-80 transition-opacity" 
+              className="flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" 
               onClick={() => onCategoryClick(cat.name)}
             >
               <div className="w-14 h-14 bg-white shadow-md rounded-2xl flex items-center justify-center text-[#193f3f] border border-[#193f3f]/10 text-2xl">
