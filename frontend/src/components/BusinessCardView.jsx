@@ -106,14 +106,17 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
             <div className="flex justify-between items-center mb-2">
                <h3 className="text-xs font-bold text-gray-700 md:text-sm">Distancia estimada</h3>
                
-               {/* BOTÓN COMO LLEGAR (GOOGLE MAPS) */}
-               <button
-                 onClick={() => openGoogleMaps(selectedBusiness)}
-                 className="flex items-center gap-1 text-[10px] font-bold text-[#193f3f] hover:underline bg-[#193f3f]/5 px-2 py-1 rounded-lg transition-colors md:text-xs md:px-3 md:py-1.5"
+               {/* BOTÓN COMO LLEGAR (GOOGLE MAPS) LINK DIRECTO */}
+               <a
+                 href={selectedBusiness.map_url || '#'}
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className={`flex items-center gap-1 text-[10px] font-bold text-[#193f3f] hover:underline bg-[#193f3f]/5 px-2 py-1 rounded-lg transition-colors md:text-xs md:px-3 md:py-1.5 ${!selectedBusiness.map_url ? 'opacity-50 pointer-events-none' : ''}`}
+                 onClick={(e) => !selectedBusiness.map_url && e.preventDefault()}
                >
                  <Navigation size={10} className="fill-current md:w-3 md:h-3" />
                  Cómo llegar
-               </button>
+               </a>
             </div>
             
             <div className="flex justify-between items-center px-2">

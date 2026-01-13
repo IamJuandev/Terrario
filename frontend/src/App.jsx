@@ -74,7 +74,9 @@ function PublicApp({ businesses, fetchData }) {
   };
 
   const openGoogleMaps = (business) => {
-    if (business && business.latitude && business.longitude) {
+    if (business && business.map_url) {
+       window.open(business.map_url, '_blank');
+    } else if (business && business.latitude && business.longitude) {
        window.open(`https://www.google.com/maps/search/?api=1&query=${business.latitude},${business.longitude}`, '_blank');
     } else {
        const query = encodeURIComponent(business.name || business);

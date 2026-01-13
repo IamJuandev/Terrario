@@ -47,8 +47,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
       distances: { walk: '', car: '', bike: '' },
       keywords: [],
       description: '',
-      latitude: '',
-      longitude: '',
+      map_url: '',
       whatsapp: '',
       is_popular: false,
       is_nearby: false,
@@ -128,6 +127,8 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
           data.append(key, JSON.stringify(formData[key]));
         } else if (key === 'priority') {
           data.append(key, formData[key] || 0);
+        } else if (key === 'map_url') { // Add map_url
+          data.append(key, formData[key] || '');
         } else if (formData[key] !== null && formData[key] !== undefined) {
           data.append(key, formData[key]);
         }
@@ -391,12 +392,8 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <div>
-                <label className="block text-sm font-medium text-gray-700">Latitud</label>
-                <input type="text" name="latitude" value={formData.latitude || ''} onChange={handleChange} placeholder="Ej: 4.60971" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" />
-             </div>
-             <div>
-                <label className="block text-sm font-medium text-gray-700">Longitud</label>
-                <input type="text" name="longitude" value={formData.longitude || ''} onChange={handleChange} placeholder="Ej: -74.08175" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" />
+                <label className="block text-sm font-medium text-gray-700">Link Google Maps (Cómo llegar)</label>
+                <input type="text" name="map_url" value={formData.map_url || ''} onChange={handleChange} placeholder="https://maps.google.com/..." className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" />
              </div>
           </div>
           

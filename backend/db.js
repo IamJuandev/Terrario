@@ -502,7 +502,8 @@ function initDb() {
     is_nearby INTEGER DEFAULT 0,
     payment_methods TEXT,
     zone TEXT,
-    priority INTEGER DEFAULT 0
+    priority INTEGER DEFAULT 0,
+    map_url TEXT
   )`, (err) => {
     if (err) {
       console.error(err.message);
@@ -538,6 +539,9 @@ function initDb() {
       });
       db.run("ALTER TABLE businesses ADD COLUMN priority INTEGER DEFAULT 0", (err) => {
         if (!err) console.log("Added priority column");
+      });
+      db.run("ALTER TABLE businesses ADD COLUMN map_url TEXT", (err) => {
+        if (!err) console.log("Added map_url column");
       });
       seedData();
     }
