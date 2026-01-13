@@ -7,12 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://api.directorioterrario.com',
+        target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,
       },
       '/uploads': {
-        target: 'https://api.directorioterrario.com',
+        target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,
       }

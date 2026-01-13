@@ -78,7 +78,8 @@ const calculateBusinessStatus = (opening_time, closing_time) => {
 
 // Get all businesses
 app.get('/api/businesses', (req, res) => {
-  db.all("SELECT * FROM businesses", [], (err, rows) => {
+  // Sort by priority DESC (higher first), then by ID DESC (newest first)
+  db.all("SELECT * FROM businesses ORDER BY priority DESC, id DESC", [], (err, rows) => {
     if (err) {
       res.status(400).json({ "error": err.message });
       return;
@@ -127,7 +128,7 @@ app.get('/api/businesses/:id', (req, res) => {
 // Create new business
 app.post('/api/businesses', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'logo', maxCount: 1 }, { name: 'gallery', maxCount: 10 }]), async (req, res) => {
   try {
-    const { name, category, specialty, deliveryTime, hours, opening_time, closing_time, distances, keywords, description, latitude, longitude, whatsapp, is_popular, is_nearby, payment_methods, zone } = req.body;
+    const { name, category, specialty, deliveryTime, hours, opening_time, closing_time, distances, keywords, description, latitude, longitude, whatsapp, is_popular, is_nearby, payment_methods, zone, priority } = req.body;
     
     let imageUrl = req.body.image || ''; // Fallback to text URL if provided
     let logoUrl = req.body.logo || '';
@@ -155,7 +156,7 @@ app.post('/api/businesses', upload.fields([{ name: 'image', maxCount: 1 }, { nam
       }
     }
 
-    const sql = 'INSERT INTO businesses (name, category, specialty, deliveryTime, image, logo, hours, opening_time, closing_time, distances, keywords, description, gallery, latitude, longitude, whatsapp, is_popular, is_nearby, payment_methods, zone) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    const sql = 'INSERT INTO businesses (name, category, specialty, deliveryTime, image, logo, hours, opening_time, closing_time, distances, keywords, description, gallery, latitude, longitude, whatsapp, is_popular, is_nearby, payment_methods, zone, priority) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
     const params = [
       name, 
       category, 
@@ -176,7 +177,8 @@ app.post('/api/businesses', upload.fields([{ name: 'image', maxCount: 1 }, { nam
       toBoolean(is_popular) ? 1 : 0,
       toBoolean(is_nearby) ? 1 : 0,
       payment_methods,
-      req.body.zone // Add zone to params
+      req.body.zone, // Add zone to params
+      priority ? parseInt(priority) : 0 // Priority (default 0)
     ];
     
     db.run(sql, params, function (err, result) {
@@ -199,7 +201,7 @@ app.post('/api/businesses', upload.fields([{ name: 'image', maxCount: 1 }, { nam
 // Update business
 app.put('/api/businesses/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'logo', maxCount: 1 }, { name: 'gallery', maxCount: 10 }]), async (req, res) => {
   try {
-    const { name, category, specialty, deliveryTime, hours, opening_time, closing_time, distances, keywords, description, latitude, longitude, whatsapp, is_popular, is_nearby, payment_methods } = req.body;
+    const { name, category, specialty, deliveryTime, hours, opening_time, closing_time, distances, keywords, description, latitude, longitude, whatsapp, is_popular, is_nearby, payment_methods, priority } = req.body;
     
     let imageUrl = req.body.image;
     let logoUrl = req.body.logo;
@@ -248,7 +250,8 @@ app.put('/api/businesses/:id', upload.fields([{ name: 'image', maxCount: 1 }, { 
       is_popular = COALESCE(?,is_popular),
       is_nearby = COALESCE(?,is_nearby),
       payment_methods = COALESCE(?,payment_methods),
-      zone = COALESCE(?,zone)
+      zone = COALESCE(?,zone),
+      priority = COALESCE(?,priority)
       WHERE id = ?`;
       
     const params = [
@@ -272,6 +275,7 @@ app.put('/api/businesses/:id', upload.fields([{ name: 'image', maxCount: 1 }, { 
       is_nearby !== undefined ? (toBoolean(is_nearby) ? 1 : 0) : null,
       payment_methods,
       req.body.zone,
+      priority !== undefined ? parseInt(priority) : null,
       req.params.id
     ];
 

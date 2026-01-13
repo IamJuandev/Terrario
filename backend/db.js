@@ -501,7 +501,8 @@ function initDb() {
     is_popular INTEGER DEFAULT 0,
     is_nearby INTEGER DEFAULT 0,
     payment_methods TEXT,
-    zone TEXT
+    zone TEXT,
+    priority INTEGER DEFAULT 0
   )`, (err) => {
     if (err) {
       console.error(err.message);
@@ -534,6 +535,9 @@ function initDb() {
       });
       db.run("ALTER TABLE businesses ADD COLUMN zone TEXT", (err) => {
         if (!err) console.log("Added zone column");
+      });
+      db.run("ALTER TABLE businesses ADD COLUMN priority INTEGER DEFAULT 0", (err) => {
+        if (!err) console.log("Added priority column");
       });
       seedData();
     }

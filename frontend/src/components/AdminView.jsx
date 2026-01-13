@@ -58,6 +58,13 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
         nequi: false,
         daviplata: false
       },
+      payment_methods: {
+        cash: false,
+        card: false,
+        nequi: false,
+        daviplata: false
+      },
+      priority: 0,
       gallery: []
     });
     setFiles({ image: null, logo: null, gallery: [] });
@@ -119,6 +126,8 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
            data.append('gallery_json', JSON.stringify(formData[key]));
         } else if (key === 'distances' || key === 'keywords' || key === 'payment_methods') {
           data.append(key, JSON.stringify(formData[key]));
+        } else if (key === 'priority') {
+          data.append(key, formData[key] || 0);
         } else if (formData[key] !== null && formData[key] !== undefined) {
           data.append(key, formData[key]);
         }
@@ -229,6 +238,12 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
               placeholder="Ej: Pizza, Italiana, Delivery" 
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" 
             />
+          </div>
+
+          <div>
+             <label className="block text-sm font-medium text-gray-700">Prioridad (Orden)</label>
+             <input type="number" name="priority" value={formData.priority || 0} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" />
+             <p className="text-xs text-gray-500 mt-1">Mayor número = Aparece primero. (Ej: 10 aparece antes que 0)</p>
           </div>
 
           <div className="border-t pt-4">
