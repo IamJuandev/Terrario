@@ -163,39 +163,28 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick,
           </button>
         </div>
         
-        <div className="grid grid-cols-1 gap-4 md:flex md:overflow-x-auto md:gap-4 md:snap-x md:snap-mandatory md:pb-4 md:scrollbar-hide lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">
+        <div className="grid grid-cols-2 gap-3 md:flex md:overflow-x-auto md:gap-4 md:pb-4 md:scrollbar-hide lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">
            {filteredBusinesses.filter(biz => biz.is_popular == 1).slice(0,4).map((biz) => (
              <div 
                key={biz.id} 
-               className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col relative border border-gray-100 hover:shadow-lg transition-shadow md:snap-center md:min-w-[280px]"
+               className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer md:min-w-[160px]"
+               onClick={() => handleBusinessClick(biz)}
              >
-                <div className="h-40 w-full bg-gray-200">
-                  <img src={getImageUrl(biz.image, 'business')} className="w-full h-full object-cover" alt={biz.name} />
-                </div>
-                <div className="p-4">
-                  <div className="flex justify-between items-start mb-1">
-                     <h3 className="font-bold text-lg text-gray-900 leading-tight w-3/4">{biz.name}</h3>
-                     <div className="bg-gray-100 p-1 rounded-lg">
-                        <img src={getImageUrl(biz.logo, 'logo')} className="w-8 h-8 rounded-md object-cover" alt="logo" />
-                     </div>
-                  </div>
-                  
-                  <p className="text-xs text-[#193f3f] font-medium mb-3">{biz.specialty}</p>
-
-                  <div className="flex gap-2 mb-4 items-center">
-                    <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">{biz.category}</span>
-                    <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-gray-600">
-                       <Clock size={12} className="text-[#193f3f]" />
-                       <span className="text-xs font-bold">{biz.deliveryTime}</span>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => handleBusinessClick(biz)}
-                    className="w-full bg-[#193f3f] text-white py-2 rounded-xl font-medium text-sm hover:bg-[#122d2d] transition-colors"
-                  >
-                    Ver
-                  </button>
-                </div>
+               <div className="h-24 w-full bg-gray-200 relative">
+                 <img src={getImageUrl(biz.image, 'business')} className="w-full h-full object-cover" alt={biz.name} />
+               </div>
+               <div className="p-3 flex flex-col">
+                 <h4 className="font-bold text-sm text-gray-800 truncate mb-0.5">{biz.name}</h4>
+                 <p className="text-[10px] text-[#193f3f] truncate mb-1.5">{biz.specialty}</p>
+                 
+                 <div>
+                   <span className="text-[9px] text-gray-400 font-medium mb-0.5 block">Tiempo de entrega:</span>
+                   <div className="flex items-center gap-1.5 bg-gray-100 px-2 py-1.5 rounded-lg w-fit">
+                      <Clock size={12} className="text-[#193f3f]" />
+                      <span className="text-[10px] font-bold text-gray-600">{biz.deliveryTime}</span>
+                   </div>
+                 </div>
+               </div>
              </div>
            ))}
         </div>
