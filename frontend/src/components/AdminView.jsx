@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Save, Upload } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Save, Upload, Copy } from 'lucide-react';
 import { createBusiness, updateBusiness, deleteBusiness } from '../services/api';
 import { DEFAULT_IMAGES } from '../constants/defaultImages';
+
+const ZONES = ['Las Acacias', 'Nueva Cecilia', 'La Bota'];
 
 export default function AdminView({ businesses, onUpdate, goBack }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -12,6 +14,11 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
   // Filters state
   const [searchTerm, setSearchTerm] = useState('');
   const [filterZone, setFilterZone] = useState('Todas');
+  
+  // Copy modal state
+  const [copyModalOpen, setCopyModalOpen] = useState(false);
+  const [businessToCopy, setBusinessToCopy] = useState(null);
+  const [selectedCopyZone, setSelectedCopyZone] = useState('');
   
   // Filtered businesses
   const filteredBusinesses = businesses.filter(biz => {
@@ -82,6 +89,60 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
     }
   };
 
+  // Open copy modal
+  const openCopyModal = (business) => {
+    setBusinessToCopy(business);
+    // Pre-select a different zone than the current one
+    const currentZone = business.zone || 'Las Acacias';
+    const otherZones = ZONES.filter(z => z !== currentZone);
+    setSelectedCopyZone(otherZones[0] || ZONES[0]);
+    setCopyModalOpen(true);
+  };
+
+  // Handle copy business to another zone
+  const handleCopyBusiness = async () => {
+    if (!businessToCopy || !selectedCopyZone) return;
+    
+    try {
+      const data = new FormData();
+      
+      // Copy all fields except id
+      const fieldsToCopy = ['name', 'category', 'specialty', 'deliveryTime', 'hours', 'opening_time', 'closing_time', 'description', 'whatsapp', 'is_popular', 'is_nearby', 'priority', 'map_url', 'image', 'logo'];
+      
+      fieldsToCopy.forEach(key => {
+        if (businessToCopy[key] !== null && businessToCopy[key] !== undefined) {
+          data.append(key, businessToCopy[key]);
+        }
+      });
+      
+      // Set the new zone
+      data.append('zone', selectedCopyZone);
+      
+      // Handle JSON fields
+      if (businessToCopy.distances) {
+        data.append('distances', JSON.stringify(businessToCopy.distances));
+      }
+      if (businessToCopy.keywords) {
+        data.append('keywords', JSON.stringify(businessToCopy.keywords));
+      }
+      if (businessToCopy.payment_methods) {
+        data.append('payment_methods', JSON.stringify(businessToCopy.payment_methods));
+      }
+      if (businessToCopy.gallery) {
+        data.append('gallery_json', JSON.stringify(businessToCopy.gallery));
+      }
+      
+      await createBusiness(data);
+      setCopyModalOpen(false);
+      setBusinessToCopy(null);
+      onUpdate();
+      alert(`Negocio copiado exitosamente a ${selectedCopyZone}`);
+    } catch (error) {
+      console.error("Error copying business:", error);
+      alert("Error al copiar el negocio");
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
@@ -123,7 +184,13 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
       Object.keys(formData).forEach(key => {
         if (key === 'gallery') {
            data.append('gallery_json', JSON.stringify(formData[key]));
-        } else if (key === 'distances' || key === 'keywords' || key === 'payment_methods') {
+        } else if (key === 'keywords') {
+          // Convert string to array if needed
+          const keywordsValue = typeof formData[key] === 'string' 
+            ? formData[key].split(',').map(k => k.trim()).filter(k => k)
+            : formData[key];
+          data.append(key, JSON.stringify(keywordsValue));
+        } else if (key === 'distances' || key === 'payment_methods') {
           data.append(key, JSON.stringify(formData[key]));
         } else if (key === 'priority') {
           data.append(key, formData[key] || 0);
@@ -235,7 +302,7 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
               type="text" 
               name="keywords" 
               value={Array.isArray(formData.keywords) ? formData.keywords.join(', ') : formData.keywords || ''} 
-              onChange={(e) => setFormData(prev => ({ ...prev, keywords: e.target.value.split(',').map(k => k.trim()).filter(k => k) }))} 
+              onChange={(e) => setFormData(prev => ({ ...prev, keywords: e.target.value }))} 
               placeholder="Ej: Pizza, Italiana, Delivery" 
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" 
             />
@@ -493,8 +560,9 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
                <div className="mt-2 flex justify-between items-center">
                   <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">{biz.category}</span>
                   <div className="flex gap-3">
-                    <button onClick={() => handleEdit(biz)} className="text-indigo-600 hover:text-indigo-900"><Edit size={18} /></button>
-                    <button onClick={() => handleDelete(biz.id)} className="text-red-600 hover:text-red-900"><Trash2 size={18} /></button>
+                    <button onClick={() => openCopyModal(biz)} className="text-emerald-600 hover:text-emerald-900" title="Copiar a otra sede"><Copy size={18} /></button>
+                    <button onClick={() => handleEdit(biz)} className="text-indigo-600 hover:text-indigo-900" title="Editar"><Edit size={18} /></button>
+                    <button onClick={() => handleDelete(biz.id)} className="text-red-600 hover:text-red-900" title="Eliminar"><Trash2 size={18} /></button>
                   </div>
                </div>
             </div>
@@ -544,14 +612,67 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
                   {biz.zone || 'Las Acacias'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button onClick={() => handleEdit(biz)} className="text-indigo-600 hover:text-indigo-900 mr-4"><Edit size={18} /></button>
-                  <button onClick={() => handleDelete(biz.id)} className="text-red-600 hover:text-red-900"><Trash2 size={18} /></button>
+                  <button onClick={() => openCopyModal(biz)} className="text-emerald-600 hover:text-emerald-900 mr-4" title="Copiar a otra sede"><Copy size={18} /></button>
+                  <button onClick={() => handleEdit(biz)} className="text-indigo-600 hover:text-indigo-900 mr-4" title="Editar"><Edit size={18} /></button>
+                  <button onClick={() => handleDelete(biz.id)} className="text-red-600 hover:text-red-900" title="Eliminar"><Trash2 size={18} /></button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Copy Modal */}
+      {copyModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 animate-fadeIn">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Copiar Negocio</h3>
+              <button onClick={() => setCopyModalOpen(false)} className="p-1 hover:bg-gray-100 rounded-full">
+                <X size={20} className="text-gray-500" />
+              </button>
+            </div>
+            
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">
+                Copiar <strong>{businessToCopy?.name}</strong> a otra sede:
+              </p>
+              <p className="text-xs text-gray-400 mb-4">
+                Sede actual: <span className="font-medium text-gray-600">{businessToCopy?.zone || 'Las Acacias'}</span>
+              </p>
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Seleccionar nueva sede</label>
+              <select
+                value={selectedCopyZone}
+                onChange={(e) => setSelectedCopyZone(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700"
+              >
+                {ZONES.filter(z => z !== (businessToCopy?.zone || 'Las Acacias')).map(zone => (
+                  <option key={zone} value={zone}>{zone}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setCopyModalOpen(false)}
+                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCopyBusiness}
+                className="flex-1 px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium flex items-center justify-center gap-2"
+              >
+                <Copy size={18} />
+                Copiar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

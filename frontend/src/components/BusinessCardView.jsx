@@ -1,8 +1,11 @@
-import React from 'react';
-import { ArrowLeft, Clock, Bike, Navigation, MessageCircle, Car } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, Clock, Bike, Navigation, MessageCircle, Car, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { DEFAULT_IMAGES } from '../constants/defaultImages';
 
 const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   if (!selectedBusiness) return null;
 
   // Helper to resolve image URL with type-specific defaults
@@ -33,12 +36,137 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
     return selectedBusiness.hours || 'No especificado';
   };
 
+  // Build array of all viewable images (main image + gallery)
+  const getAllImages = () => {
+    const images = [];
+    if (selectedBusiness.image) {
+      images.push(getImageUrl(selectedBusiness.image, 'business'));
+    }
+    if (selectedBusiness.gallery && selectedBusiness.gallery.length > 0) {
+      selectedBusiness.gallery.forEach(img => {
+        images.push(getImageUrl(img, 'gallery'));
+      });
+    }
+    return images;
+  };
+
+  const allImages = getAllImages();
+
+  // Lightbox handlers
+  const openLightbox = (index) => {
+    setCurrentImageIndex(index);
+    setLightboxOpen(true);
+    document.body.style.overflow = 'hidden'; // Prevent background scroll
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+    document.body.style.overflow = 'auto';
+  };
+
+  const goToPrevImage = (e) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+  };
+
+  const goToNextImage = (e) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+  };
+
+  // Handle keyboard navigation
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') goToPrevImage(e);
+    if (e.key === 'ArrowRight') goToNextImage(e);
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen animate-fadeIn w-full md:p-8">
+      {/* Lightbox Modal */}
+      {lightboxOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={closeLightbox}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+        >
+          {/* Close button */}
+          <button 
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 z-50 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+          >
+            <X size={28} className="text-white" />
+          </button>
+
+          {/* Image counter */}
+          <div className="absolute top-4 left-4 z-50 text-white/80 text-sm font-medium bg-black/30 px-3 py-1 rounded-full">
+            {currentImageIndex + 1} / {allImages.length}
+          </div>
+
+          {/* Previous button */}
+          {allImages.length > 1 && (
+            <button 
+              onClick={goToPrevImage}
+              className="absolute left-2 md:left-4 z-50 p-2 md:p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+            >
+              <ChevronLeft size={32} className="text-white" />
+            </button>
+          )}
+
+          {/* Main image */}
+          <div 
+            className="max-w-[90vw] max-h-[85vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={allImages[currentImageIndex]} 
+              alt={`Imagen ${currentImageIndex + 1}`}
+              className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+            />
+          </div>
+
+          {/* Next button */}
+          {allImages.length > 1 && (
+            <button 
+              onClick={goToNextImage}
+              className="absolute right-2 md:right-4 z-50 p-2 md:p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+            >
+              <ChevronRight size={32} className="text-white" />
+            </button>
+          )}
+
+          {/* Thumbnail strip */}
+          {allImages.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 max-w-[90vw] overflow-x-auto p-2 bg-black/30 rounded-xl">
+              {allImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentImageIndex(idx);
+                  }}
+                  className={`flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                    idx === currentImageIndex ? 'border-white scale-105' : 'border-transparent opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="md:max-w-6xl md:mx-auto md:bg-white md:rounded-3xl md:shadow-xl md:overflow-hidden md:flex">
         {/* Imagen Grande Superior (Izquierda en Desktop) */}
         <div className="relative h-64 w-full md:h-auto md:w-1/2 md:min-h-[500px]">
-          <img src={getImageUrl(selectedBusiness.image, 'business')} alt={selectedBusiness.name} className="w-full h-full object-cover" />
+          <img 
+            src={getImageUrl(selectedBusiness.image, 'business')} 
+            alt={selectedBusiness.name} 
+            className="w-full h-full object-cover cursor-pointer"
+            onClick={() => openLightbox(0)}
+          />
           <button onClick={goBack} className="absolute top-4 left-4 bg-white/90 p-2 rounded-full shadow-lg backdrop-blur-sm hover:bg-white transition-colors">
             <ArrowLeft size={24} className="text-gray-800" />
           </button>
@@ -192,18 +320,31 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
             </a>
           </div>
 
-          {/* CAMBIO: Galería de Fotos ÚNICA (antes duplicada) - Sin título */}
+          {/* Galería de Fotos con Lightbox */}
           <div className="mb-6">
              <div className="grid grid-cols-3 gap-2 md:grid-cols-4">
                {selectedBusiness.gallery && selectedBusiness.gallery.length > 0 ? (
                  selectedBusiness.gallery.map((imgUrl, idx) => (
-                   <div key={idx} className="group relative rounded-lg overflow-hidden shadow-sm border border-gray-100 aspect-square bg-gray-200 cursor-pointer">
+                   <div 
+                     key={idx} 
+                     className="group relative rounded-lg overflow-hidden shadow-sm border border-gray-100 aspect-square bg-gray-200 cursor-pointer"
+                     onClick={() => openLightbox(idx + 1)} // +1 because main image is at index 0
+                   >
                       <img 
                          src={getImageUrl(imgUrl, 'gallery')} 
                          alt={`Foto ${idx + 1}`} 
                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 p-2 rounded-full">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.3-4.3"></path>
+                            <path d="M11 8v6"></path>
+                            <path d="M8 11h6"></path>
+                          </svg>
+                        </div>
+                      </div>
                    </div>
                  ))
                ) : (
@@ -228,3 +369,4 @@ const BusinessCardView = ({ selectedBusiness, goBack, openGoogleMaps }) => {
 };
 
 export default BusinessCardView;
+

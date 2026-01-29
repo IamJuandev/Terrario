@@ -126,11 +126,11 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick,
             Ver todos <ArrowRight size={14} className="ml-1" />
           </button>
         </div>
-        <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:pb-0">
-          {filteredBusinesses.filter(biz => biz.is_nearby == 1).slice(0, 5).map(biz => (
+        <div className="grid grid-cols-2 gap-3 md:flex md:overflow-x-auto md:gap-4 md:pb-4 md:scrollbar-hide lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">
+          {filteredBusinesses.filter(biz => biz.is_nearby == 1).slice(0, 4).map(biz => (
              <div 
                key={biz.id} 
-               className="min-w-[160px] bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer" 
+               className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer md:min-w-[160px]" 
                onClick={() => handleBusinessClick(biz)}
              >
                <div className="h-24 w-full bg-gray-200 relative">
@@ -163,11 +163,11 @@ const HomeView = ({ businesses, handleBusinessClick, onSeeMore, onCategoryClick,
           </button>
         </div>
         
-        <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory pb-4 scrollbar-hide md:grid md:grid-cols-2 lg:grid-cols-4 md:overflow-visible md:pb-0">
+        <div className="grid grid-cols-1 gap-4 md:flex md:overflow-x-auto md:gap-4 md:snap-x md:snap-mandatory md:pb-4 md:scrollbar-hide lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">
            {filteredBusinesses.filter(biz => biz.is_popular == 1).slice(0,4).map((biz) => (
              <div 
                key={biz.id} 
-               className="snap-center min-w-[280px] bg-white rounded-2xl shadow-md overflow-hidden flex flex-col relative border border-gray-100 hover:shadow-lg transition-shadow"
+               className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col relative border border-gray-100 hover:shadow-lg transition-shadow md:snap-center md:min-w-[280px]"
              >
                 <div className="h-40 w-full bg-gray-200">
                   <img src={getImageUrl(biz.image, 'business')} className="w-full h-full object-cover" alt={biz.name} />
