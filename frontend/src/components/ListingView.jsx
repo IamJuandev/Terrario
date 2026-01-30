@@ -68,7 +68,7 @@ const ListingView = ({ title, businesses, goBack, handleBusinessClick }) => {
                 <div className="flex items-center gap-4 text-xs text-gray-500 mb-2">
                   <div className="flex items-center gap-1 text-[#193f3f] font-bold">
                     <Clock size={12} />
-                    <span>Tiempo de espera: {biz.deliveryTime || '15-20 min'}</span>
+                    <span>Tiempo de entrega: {biz.deliveryTime || '15-20 min'}</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-gray-400 text-xs pr-2">
