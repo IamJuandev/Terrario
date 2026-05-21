@@ -3,8 +3,8 @@ import { ChefHat, ShoppingBag, Pill, LayoutGrid, MapPin } from 'lucide-react';
 
 export const CATEGORIES = [
   { id: 1, name: 'Comida a Domicilio', icon: <ChefHat size={20} /> },
-  { id: 2, name: 'Supermercados', icon: <ShoppingBag size={20} /> },
-  { id: 3, name: '¿A donde ir?', icon: <MapPin size={20} /> },
+  { id: 2, name: '¿A donde ir?', icon: <MapPin size={20} /> },
+  { id: 3, name: 'Supermercados', icon: <ShoppingBag size={20} /> },
   { id: 4, name: 'Droguerías', icon: <Pill size={20} /> },
   { id: 5, name: 'Otros', icon: <LayoutGrid size={20} /> },
 ];
