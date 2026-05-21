@@ -23,7 +23,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 const BUSINESSES_DATA = [
   {
     name: "TROPIWINGS",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "ALITAS & COSTILLAS",
     deliveryTime: "30 min",
     image: "",
@@ -42,7 +42,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "LOS CHAMOS",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "COMIDAS RAPIDAS/Shawarma",
     deliveryTime: "30 min",
     image: "",
@@ -61,7 +61,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "PERROS Y PERRAS",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "COMIDAS RAPIDAS",
     deliveryTime: "15-20 min",
     image: "",
@@ -80,7 +80,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "LA ARROCERIA",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "ARROZ",
     deliveryTime: "50 min",
     image: "",
@@ -99,7 +99,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "BROASTER DEL CHEF",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "POLLO BROASTER Y ALMUERZOS",
     deliveryTime: "20 min",
     image: "",
@@ -138,7 +138,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "CARNITAS",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "ASADOS AL BARRIL",
     deliveryTime: "20 min",
     image: "",
@@ -158,7 +158,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "TROPICAL FRUITS",
-    category: "Restaurantes", // Or Cafés/Heladerías if available, using Restaurantes for consistency
+    category: "Comida a Domicilio", // Or Cafés/Heladerías if available, using Comida a Domicilio for consistency
     specialty: "HELADERÍA",
     deliveryTime: "45 min",
     image: "",
@@ -178,7 +178,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "POLLO SABROSON",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "POLLO",
     deliveryTime: "20-30 min",
     image: "",
@@ -198,7 +198,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "CRIOLLITAS",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "AREPAS RELLENAS",
     deliveryTime: "15 min",
     image: "",
@@ -218,7 +218,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "BLOM",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "CREPES Y WAFLES",
     deliveryTime: "20 min",
     image: "",
@@ -238,7 +238,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "WANDER BURGUER",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "COMIDAS RAPIDAS",
     deliveryTime: "45-50 min",
     image: "",
@@ -258,7 +258,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "BURGUER MERAKI",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "COMIDAS RAPIDAS",
     deliveryTime: "35 min",
     image: "",
@@ -278,7 +278,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "TONNY PIZZA",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "PIZZAS, LASAGNAS Y PASTA",
     deliveryTime: "15 min",
     image: "",
@@ -338,7 +338,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "TIERRA QUERIDA",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "HAMBURGUESAS ARTESANALES",
     deliveryTime: "50 min",
     image: "",
@@ -398,7 +398,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "GUTYS",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "AREPAS Y ASADO",
     deliveryTime: "35-40 min",
     image: "",
@@ -418,7 +418,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "EL PALACIO DE ARROZ",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "ARROZ",
     deliveryTime: "40-50 min",
     image: "",
@@ -438,7 +438,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "LAS DELICIAS DE YEYE",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "SANDWICH CUBANO",
     deliveryTime: "40 min",
     image: "",
@@ -543,9 +543,21 @@ function initDb() {
       db.run("ALTER TABLE businesses ADD COLUMN map_url TEXT", (err) => {
         if (!err) console.log("Added map_url column");
       });
+      migrateCategoryNames();
       seedData();
     }
   });
+}
+
+function migrateCategoryNames() {
+  db.run(
+    "UPDATE businesses SET category = ? WHERE category = ?",
+    ['Comida a Domicilio', 'Restaurantes'],
+    (err) => {
+      if (err) return console.error('Error migrating category names:', err.message);
+      console.log('Category names migrated.');
+    }
+  );
 }
 
 function seedData() {

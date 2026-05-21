@@ -1,19 +1,20 @@
 import React from 'react';
-import { ChefHat, ShoppingBag, Coffee, Pill, LayoutGrid } from 'lucide-react';
+import { ChefHat, ShoppingBag, Coffee, Pill, LayoutGrid, MapPin } from 'lucide-react';
 
 export const CATEGORIES = [
-  { id: 1, name: 'Restaurantes', icon: <ChefHat size={20} /> },
+  { id: 1, name: 'Comida a Domicilio', icon: <ChefHat size={20} /> },
   { id: 2, name: 'Supermercados', icon: <ShoppingBag size={20} /> },
   { id: 3, name: 'Cafés', icon: <Coffee size={20} /> },
   { id: 4, name: 'Droguerías', icon: <Pill size={20} /> },
-  { id: 5, name: 'Otros', icon: <LayoutGrid size={20} /> },
+  { id: 5, name: 'A donde ir', icon: <MapPin size={20} /> },
+  { id: 6, name: 'Otros', icon: <LayoutGrid size={20} /> },
 ];
 
 export const BUSINESSES = [
   {
     id: 101,
     name: "La Trattoria del Barrio",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "Comida Italiana & Pastas Artesanales",
     deliveryTime: "30-45 min",
     image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80",
@@ -74,7 +75,7 @@ export const BUSINESSES = [
   {
     id: 104,
     name: "Burger Kingo",
-    category: "Restaurantes",
+    category: "Comida a Domicilio",
     specialty: "Hamburguesas al Carbón",
     deliveryTime: "25-35 min",
     image: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&q=80",

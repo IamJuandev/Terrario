@@ -3,7 +3,7 @@
 async function testCreateBusiness() {
   const form = new FormData();
   form.append('name', 'Test Business ' + Date.now());
-  form.append('category', 'Restaurantes');
+  form.append('category', 'Comida a Domicilio');
   form.append('specialty', 'Testing');
   form.append('deliveryTime', '30 min');
   form.append('hours', '09:00 - 18:00');
