@@ -3,7 +3,7 @@ import { ChefHat, ShoppingBag, Pill, LayoutGrid, MapPin } from 'lucide-react';
 
 export const CATEGORIES = [
   { id: 1, name: 'Comida a Domicilio', icon: <ChefHat size={20} /> },
-  { id: 2, name: '¿A donde ir?', icon: <MapPin size={20} /> },
+  { id: 2, name: '¿A dónde ir?', icon: <MapPin size={20} /> },
   { id: 3, name: 'Supermercados', icon: <ShoppingBag size={20} /> },
   { id: 4, name: 'Droguerías', icon: <Pill size={20} /> },
   { id: 5, name: 'Otros', icon: <LayoutGrid size={20} /> },
@@ -35,7 +35,7 @@ export const BUSINESSES = [
   {
     id: 102,
     name: "Café El Despertar",
-    category: "¿A donde ir?",
+    category: "¿A dónde ir?",
     specialty: "Café de Origen & Repostería",
     deliveryTime: "15-25 min",
     image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80",

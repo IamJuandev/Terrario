@@ -158,7 +158,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "TROPICAL FRUITS",
-    category: "Comida a Domicilio", // Or ¿A donde ir?/Heladerías if available, using Comida a Domicilio for consistency
+    category: "Comida a Domicilio", // Or ¿A dónde ir?/Heladerías if available, using Comida a Domicilio for consistency
     specialty: "HELADERÍA",
     deliveryTime: "45 min",
     image: "",
@@ -561,7 +561,7 @@ function migrateCategoryNames() {
 
     db.run(
       "UPDATE businesses SET category = ? WHERE category IN (?, ?)",
-      ['¿A donde ir?', 'Cafés', 'A donde ir'],
+      ['¿A dónde ir?', 'Cafés', 'A donde ir'],
       (err) => {
         if (err) return console.error('Error migrating cafe/category names:', err.message);
         console.log('Category names migrated.');
