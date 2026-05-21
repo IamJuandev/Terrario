@@ -158,7 +158,7 @@ const BUSINESSES_DATA = [
   },
   {
     name: "TROPICAL FRUITS",
-    category: "Comida a Domicilio", // Or Cafés/Heladerías if available, using Comida a Domicilio for consistency
+    category: "Comida a Domicilio", // Or ¿A donde ir?/Heladerías if available, using Comida a Domicilio for consistency
     specialty: "HELADERÍA",
     deliveryTime: "45 min",
     image: "",
@@ -550,14 +550,24 @@ function initDb() {
 }
 
 function migrateCategoryNames() {
-  db.run(
-    "UPDATE businesses SET category = ? WHERE category = ?",
-    ['Comida a Domicilio', 'Restaurantes'],
-    (err) => {
-      if (err) return console.error('Error migrating category names:', err.message);
-      console.log('Category names migrated.');
-    }
-  );
+  db.serialize(() => {
+    db.run(
+      "UPDATE businesses SET category = ? WHERE category = ?",
+      ['Comida a Domicilio', 'Restaurantes'],
+      (err) => {
+        if (err) return console.error('Error migrating restaurant category name:', err.message);
+      }
+    );
+
+    db.run(
+      "UPDATE businesses SET category = ? WHERE category IN (?, ?)",
+      ['¿A donde ir?', 'Cafés', 'A donde ir'],
+      (err) => {
+        if (err) return console.error('Error migrating cafe/category names:', err.message);
+        console.log('Category names migrated.');
+      }
+    );
+  });
 }
 
 function seedData() {

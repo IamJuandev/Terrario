@@ -1,13 +1,12 @@
 import React from 'react';
-import { ChefHat, ShoppingBag, Coffee, Pill, LayoutGrid, MapPin } from 'lucide-react';
+import { ChefHat, ShoppingBag, Pill, LayoutGrid, MapPin } from 'lucide-react';
 
 export const CATEGORIES = [
   { id: 1, name: 'Comida a Domicilio', icon: <ChefHat size={20} /> },
   { id: 2, name: 'Supermercados', icon: <ShoppingBag size={20} /> },
-  { id: 3, name: 'Cafés', icon: <Coffee size={20} /> },
+  { id: 3, name: '¿A donde ir?', icon: <MapPin size={20} /> },
   { id: 4, name: 'Droguerías', icon: <Pill size={20} /> },
-  { id: 5, name: 'A donde ir', icon: <MapPin size={20} /> },
-  { id: 6, name: 'Otros', icon: <LayoutGrid size={20} /> },
+  { id: 5, name: 'Otros', icon: <LayoutGrid size={20} /> },
 ];
 
 export const BUSINESSES = [
@@ -36,7 +35,7 @@ export const BUSINESSES = [
   {
     id: 102,
     name: "Café El Despertar",
-    category: "Cafés",
+    category: "¿A donde ir?",
     specialty: "Café de Origen & Repostería",
     deliveryTime: "15-25 min",
     image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80",

@@ -248,9 +248,8 @@ export default function AdminView({ businesses, onUpdate, goBack }) {
             <select name="category" value={formData.category || 'Comida a Domicilio'} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
               <option>Comida a Domicilio</option>
               <option>Supermercados</option>
-              <option>Cafés</option>
+              <option>¿A donde ir?</option>
               <option>Droguerías</option>
-              <option>A donde ir</option>
               <option>Otros</option>
             </select>
           </div>
